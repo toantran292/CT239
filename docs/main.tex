@@ -1,0 +1,54 @@
+\documentclass[a4paper]{article} % Create new a report
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc} % To use unicode
+\usepackage{array} % Required for Table Column Text Alignment with Custom Widths
+\usepackage{caption}
+\usepackage{changepage}
+\usepackage{enumitem}
+\usepackage{float} % Set position of image.
+\usepackage{forloop}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{lipsum}
+\usepackage{longtable}
+\usepackage{mathptmx} % Time New Roman
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{parskip}
+\usepackage{tabularx}
+\usepackage{tabularray}
+\usepackage{textcase}
+\usepackage{varwidth}
+\usepackage{tikz} % Create border
+\usepackage{titlesec} % Set font style
+\usepackage{tocloft}
+\usepackage{xcolor}
+\usepackage{xparse}
+
+\usepackage[right=2cm,left=3cm,top=2cm,bottom=2.5cm]{geometry}
+\usepackage[fontsize=13pt]{scrextend}
+
+\usetikzlibrary{calc}
+
+\usepackage{./config/heading}
+
+\renewcommand{\baselinestretch}{1.2}
+\setlist[itemize,1]{label=--, itemsep=0pt, topsep=0pt}
+\setlist[itemize,2]{label=+, itemsep=0pt, topsep=0pt}
+\setlength{\parskip}{6pt} % Spacing after
+\setlength{\parindent}{1cm} % Paragraph indentation
+\newcommand{\setsection}[1]{\section*{\texorpdfstring{\MakeTextUppercase{#1}}{#1}}\addcontentsline{toc}{section}{\texorpdfstring{\MakeTextUppercase{#1}}{#1}}}
+\newcommand{\setsubsection}[1]{\subsection*{\texorpdfstring{\MakeTextUppercase{#1}}{#1}}\addcontentsline{toc}{subsection}{\texorpdfstring{\MakeTextUppercase{#1}}{#1}}}
+
+\begin{document}
+
+\include{cover_page}
+\include{evaluete}
+\include{thanks}
+% \include{list}
+
+\pagenumbering{arabic}
+\include{general}
+\end{document}
