@@ -13,7 +13,7 @@ import { ComboboxDemo } from "@/app/components/ui/Combobox";
 export default function AlgoRadio() {
   const { selectedAlgo, selectedTopic, onChangeSelectedAlgo } = useGraph();
   return (
-    <div className="mb-3">
+    <div className="grid w-full max-w-sm items-center gap-1.5 mb-3">
       <Label htmlFor="algo">Thuật toán:</Label>
       <ComboboxDemo
         id="algo"

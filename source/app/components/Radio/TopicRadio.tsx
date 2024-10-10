@@ -11,7 +11,7 @@ export default function TopicRadio() {
   console.log(inputRefs);
 
   return (
-    <div className="mb-3">
+    <div className="grid w-full max-w-sm items-center gap-1.5 mb-3">
       <Label htmlFor="topic">Chủ đề:</Label>
       <ComboboxDemo
         id="topic"

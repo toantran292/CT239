@@ -77,7 +77,7 @@ export default function ShortestPathInput() {
 
   return (
     <div className="w-full">
-      <div className="mb-3">
+      <div className="grid w-full items-center gap-1.5 mb-3">
         <Label htmlFor="matrix">Ma Trận</Label>
         <Textarea
           id="matrix"
@@ -88,7 +88,7 @@ export default function ShortestPathInput() {
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
 
-      <div className="mb-3">
+      <div className="grid w-full items-center gap-1.5 mb-3">
         <Label htmlFor="source">Đỉnh bắt đầu</Label>
         <Input
           id="source"
