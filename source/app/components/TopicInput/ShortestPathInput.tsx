@@ -5,85 +5,44 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-
-function MatrixInput() {}
+import useMatrix from "@/app/hooks/useMatrix";
 
 export default function ShortestPathInput() {
-  const [input, setInput] = useState("");
-  const [error, setError] = useState("");
+  const {
+    input,
+    error,
+    handleSetInput,
+    onSubmitMatrix,
+    matrixValue,
+    onFormatMatrix,
+  } = useMatrix();
   const [source, setSource] = useState<number>(0);
-  const matrixValue = useRef<any>(null);
+  const [errorSource, setErrorSource] = useState<string>("");
 
-  const onChangeMatrix = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-  };
-
-  const validateMatrix = (lines: Array<Array<any>>) => {
-    const n = lines.length;
-    const m = lines[0].length;
-
-    if (n > MAX_N || m > MAX_M) throw new Error("Ma trận quá lớn");
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    for (const [index, line] of lines.entries()) {
-      if (line.length !== m)
-        throw new Error(
-          `dòng thứ ${index + 1} dài: ${line.length}, mong đợi ${m}`,
-        );
-
-      for (const item of line) {
-        if (typeof item !== "number" || isNaN(item))
-          throw new Error("Ma trận phải chứa số");
-      }
+  const handleSetSource = (v: number) => {
+    if (
+      v < 0 ||
+      v >= Math.max(matrixValue?.length || 0, matrixValue?.[0]?.length || 0)
+    ) {
+      setErrorSource(
+        `Đỉnh không hợp lệ: 0 <= v < ${Math.max(matrixValue?.length || 0, matrixValue?.[0]?.length || 0)}`,
+      );
+    } else {
+      setErrorSource("");
     }
-  };
-
-  const formatMatrix = (text: string) => {
-    const formattedInput = text
-      .replace(/[^\d\s\n\-]/g, "")
-      .replace(/[ ]{2,}/g, " ")
-      .replace(/(?<=\d)\n+/g, "\n")
-      .replace(/\s*\n\s*/g, "\n")
-      .trim();
-
-    setInput(formattedInput);
-    return formattedInput
-      .split("\n")
-      .map((item) => item.split(" "))
-      .map((item) => item.map(Number));
-  };
-
-  const onSuccess = (result: any) => {
-    validateMatrix(result);
-    setError("");
-    matrixValue.current = result;
-    const { dist, trace } = dijkstra(result, source);
-    console.log({ dist, trace });
-  };
-
-  const handleMatrixValue = () => {
-    if (!input) return;
-    const lines = formatMatrix(input);
-    try {
-      validateMatrix(lines);
-      onSuccess(lines);
-    } catch (e: any) {
-      matrixValue.current = [];
-      setSource(0);
-      setError(`Ma trận không hợp lệ: ${e.message}`);
-    }
+    setSource(v);
   };
 
   return (
     <div className="w-full">
       <div className="grid w-full items-center gap-1.5 mb-3">
-        <Label htmlFor="matrix">Ma Trận</Label>
+        <Label htmlFor="matrix">{"Ma Trận (N, M <= 10)"}</Label>
         <Textarea
           id="matrix"
           className={cn("w-full h-36 resize-none", error && "border-red-500")}
           value={input}
-          onChange={onChangeMatrix}
+          onChange={(e) => handleSetInput(e.target.value)}
+          onBlur={() => onFormatMatrix()}
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
@@ -93,17 +52,17 @@ export default function ShortestPathInput() {
         <Input
           id="source"
           type="number"
+          className={cn(errorSource && "border-red-500")}
           value={source}
-          min={0}
-          max={Math.max(0, matrixValue.current?.length - 1)}
           onChange={(e) => {
-            setSource(Number(e.target.value));
+            handleSetSource(Number(e.target.value));
           }}
         />
+        {errorSource && <p className="text-sm text-red-600">{errorSource}</p>}
       </div>
       <button
         className="w-full bg-[#1F5CA9] text-white font-bold rounded py-2"
-        onClick={() => handleMatrixValue()}
+        onClick={() => onSubmitMatrix()}
       >
         Sinh đồ thị
       </button>
