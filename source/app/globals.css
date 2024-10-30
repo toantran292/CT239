@@ -64,3 +64,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.floatingedges {
+  display: flex;
+  flex-grow: .5;
+}
+
+.floatingedges .react-flow__handle {
+  opacity: 0;
+}
+
+.input-graph {
+  display: flex;
+  height: 75%;
+}

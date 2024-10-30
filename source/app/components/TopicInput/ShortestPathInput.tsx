@@ -1,22 +1,24 @@
-import { ChangeEvent, useRef, useState } from "react";
-import { MAX_M, MAX_N } from "@/app/constants";
-import dijkstra from "@/app/algorthms/shortest_paths/dijkstra";
+import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import useMatrix from "@/app/hooks/useMatrix";
+import useShortestPath from "@/app/hooks/useShortestPath";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function ShortestPathInput() {
   const {
     input,
     error,
+    source,
+    matrixValue,
     handleSetInput,
     onSubmitMatrix,
-    matrixValue,
     onFormatMatrix,
-  } = useMatrix();
-  const [source, setSource] = useState<number>(0);
+    handleSetSource: setSource,
+    onlyResult,
+    toggleOnlyResult,
+  } = useShortestPath();
   const [errorSource, setErrorSource] = useState<string>("");
 
   const handleSetSource = (v: number) => {
@@ -60,6 +62,15 @@ export default function ShortestPathInput() {
         />
         {errorSource && <p className="text-sm text-red-600">{errorSource}</p>}
       </div>
+      <div className="grid w-full items-center gap-1.5 mb-3">
+        <Label htmlFor="only-result">Chỉ hiện đường kết quả</Label>
+        <Checkbox
+          id="only-result"
+          checked={onlyResult}
+          onClick={toggleOnlyResult}
+        />
+      </div>
+
       <button
         className="w-full bg-[#1F5CA9] text-white font-bold rounded py-2"
         onClick={() => onSubmitMatrix()}

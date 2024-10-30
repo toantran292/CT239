@@ -5,22 +5,39 @@ import { Toaster } from "@/components/ui/toaster";
 import TopicInput from "@/app/components/TopicInput";
 import GraphProvider from "@/app/contexts/GraphContext";
 import GraphReactFlow from "@/app/components/GraphReactFlow";
-import MatrixProvider from "@/app/contexts/MatrixContext";
+import ShortestPathProvider from "@/app/contexts/ShortestPathContext";
+import useGraph from "@/app/hooks/useGraph";
+import { GRAPH_TOPIC } from "@/app/constants";
+
+const Content = () => {
+  const { selectedTopic, selectedAlgo } = useGraph();
+
+  switch (selectedTopic) {
+    case GRAPH_TOPIC.SHORTEST_PATH:
+      return <GraphReactFlow />;
+    default:
+      return <div>Nothing</div>;
+  }
+};
 
 export default function Home() {
   return (
-    <GraphProvider>
-      <MatrixProvider>
-        <div className="flex flex-row w-full h-full">
-          <div className="w-1/4 p-3">
-            <TopicRadio />
-            <AlgoRadio />
-            <TopicInput />
+    <>
+      <GraphProvider>
+        <ShortestPathProvider>
+          <div className="flex flex-row w-full h-full">
+            <div className="w-1/4 p-3">
+              <TopicRadio />
+              <AlgoRadio />
+              <TopicInput />
+            </div>
+            <div className="flex-col flex-1 h-screen border-2 p-3">
+              <Content />
+            </div>
           </div>
-          <GraphReactFlow />
-          <Toaster />
-        </div>
-      </MatrixProvider>
-    </GraphProvider>
+        </ShortestPathProvider>
+      </GraphProvider>
+      <Toaster />
+    </>
   );
 }

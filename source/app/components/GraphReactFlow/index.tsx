@@ -3,15 +3,17 @@ import {
   Background,
   BackgroundVariant,
   ConnectionLineType,
-  Panel,
   ReactFlow,
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
 import dagre from "@dagrejs/dagre";
 import { useCallback, useEffect } from "react";
-import useMatrix from "@/app/hooks/useMatrix";
-import { matrix2node_edge } from "@/lib/utils";
+import useShortestPath from "@/app/hooks/useShortestPath";
+import { Matrix } from "@/lib/utils";
+import useGraph from "@/app/hooks/useGraph";
+import FloatingEdge from "@/app/components/GraphReactFlow/edges/FloatingEdge";
+import FloatingConnectionLine from "@/app/components/GraphReactFlow/edges/FloatingConnectionLine";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -50,71 +52,83 @@ const getLayoutedElements = (nodes: any, edges: any, direction = "TB") => {
   return { nodes: newNodes, edges };
 };
 
-const Flow = ({ isDirected }: any) => {
-  const { matrixValue } = useMatrix();
+const changeSourceElements = (nodes: any, source: number) => {
+  const newNodes = nodes.map((node: any) => {
+    const res = {
+      ...node,
+      style: { ...node.style, backgroundColor: "white", color: "black" },
+    };
+
+    if (node.id === source.toString()) {
+      res.style = {
+        ...res.style,
+        backgroundColor: "red",
+        color: "white",
+      };
+    }
+    return res;
+  });
+
+  return { nodes: newNodes };
+};
+
+const edgeTypes = {
+  floating: FloatingEdge,
+};
+
+const Flow = () => {
+  const { matrixValue, source, onlyResult } = useShortestPath();
+  const { selectedAlgo } = useGraph();
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
   useEffect(() => {
-    const { nodes: initialNodes, edges: initialEdges } =
-      matrix2node_edge(matrixValue);
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+    const { nodes: initialNodes, edges: initialEdges } = new Matrix(
+      matrixValue,
+    ).to_path(selectedAlgo, source, onlyResult);
+    const { nodes: layoutedNodes } = getLayoutedElements(
       initialNodes,
       initialEdges,
       "LR",
     );
     setNodes([...layoutedNodes]);
-    setEdges([...layoutedEdges]);
-  }, [matrixValue, isDirected]);
+  }, [matrixValue, selectedAlgo, setEdges, setNodes]);
 
-  const onConnect = useCallback((params: any) => {
-    console.log(params);
-    setEdges((eds: any) =>
-      addEdge(
-        { ...params, type: ConnectionLineType.SmoothStep, animated: true },
-        eds,
-      ),
+  useEffect(() => {
+    const { edges: initialEdges } = new Matrix(matrixValue).to_path(
+      selectedAlgo,
+      source,
+      onlyResult,
     );
-  }, []);
-  const onLayout = useCallback(
-    (direction: any) => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
-
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
-    },
-    [nodes, edges],
-  );
+    const { nodes: changedNodes } = changeSourceElements(nodes, source);
+    setEdges([...initialEdges]);
+    setNodes([...changedNodes]);
+  }, [matrixValue, onlyResult, selectedAlgo, setEdges, source]);
 
   return (
     <ReactFlow
+      className="floatingedges"
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      connectionLineType={ConnectionLineType.SmoothStep}
       fitView
+      edgeTypes={edgeTypes}
+      connectionLineComponent={FloatingConnectionLine}
+      edgesFocusable={false}
+      nodesFocusable={false}
+      nodesConnectable={false}
+      elementsSelectable={false}
     >
-      <Panel position="top-right">
-        <button onClick={() => onLayout("TB")}>vertical layout</button>
-        <button onClick={() => onLayout("LR")}>horizontal layout</button>
-      </Panel>
       <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
     </ReactFlow>
   );
 };
 
-export default function GraphReactFlow({
-  isDirected = true,
-}: {
-  isDirected: boolean;
-}) {
-  const { matrixValue } = useMatrix();
-  return (
-    <div className="flex-col flex-1 h-screen border-2 p-3">
-      {matrixValue && <Flow isDirected={isDirected} />}
-    </div>
-  );
+export default function GraphReactFlow() {
+  const { matrixValue } = useShortestPath();
+
+  if (!matrixValue) return null;
+
+  return <Flow />;
 }

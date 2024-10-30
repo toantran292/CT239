@@ -1,16 +1,24 @@
-import { createContext, PropsWithChildren, useRef, useState } from "react";
+import { createContext, PropsWithChildren, useState } from "react";
 import { MAX_M, MAX_N } from "@/app/constants";
+import useGraph from "@/app/hooks/useGraph";
+import { useToast } from "@/hooks/use-toast";
 
-export interface IMatrix {
+export interface IShortestPath {
   input: string;
   error: string;
   matrixValue: Array<Array<number>>;
+  source: number;
   onSubmitMatrix: () => void;
   onFormatMatrix: () => void;
   handleSetInput: (value: string) => void;
+  handleSetSource: (value: number) => void;
+  onlyResult: boolean;
+  toggleOnlyResult: () => void;
 }
 
-export const MatrixContext = createContext<IMatrix>({} as IMatrix);
+export const ShortestPathContext = createContext<IShortestPath>(
+  {} as IShortestPath,
+);
 
 export function text2matrix(text: string) {
   const formattedInput = text
@@ -50,9 +58,13 @@ export const validateMatrix = (mat: Array<Array<any>>) => {
   }
 };
 
-export default function MatrixProvider({ children }: PropsWithChildren) {
+export default function ShortestPathProvider({ children }: PropsWithChildren) {
+  const { selectedTopic, selectedAlgo } = useGraph();
+  const { toast } = useToast();
+  const [source, setSource] = useState<number>(0);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [onlyResult, setOnlyResult] = useState(false);
   const [matrixValue, setMatrixValue] = useState<any>([]);
 
   const onFormatMatrix = () => {
@@ -62,6 +74,14 @@ export default function MatrixProvider({ children }: PropsWithChildren) {
     setInput(formattedInput);
     setMatrixValue(result);
   };
+
+  const handleSetSource = (value: number) => {
+    setSource(value);
+  };
+  const toggleOnlyResult = () => {
+    setOnlyResult((prev) => !prev);
+  };
+
   const handleSetInput = (value: string) => {
     setInput(value);
   };
@@ -71,26 +91,42 @@ export default function MatrixProvider({ children }: PropsWithChildren) {
   };
 
   const onSubmitMatrix = () => {
+    if (!selectedAlgo || !selectedTopic) {
+      toast({
+        variant: "destructive",
+        title: "Chưa chọn chủ đề hoặc thuật toán",
+      });
+      return;
+    }
+
     try {
       validateMatrix(matrixValue);
       setError("");
     } catch (e: any) {
-      handleSetError(`Ma trận không hợp lệ: ${e.message}`);
+      let message = e.message;
+      if (e instanceof TypeError) {
+        message = "Chưa nhập ma trận";
+      }
+      handleSetError(`Ma trận không hợp lệ: ${message}`);
     }
   };
 
   return (
-    <MatrixContext.Provider
+    <ShortestPathContext.Provider
       value={{
         input,
         error,
+        source,
         matrixValue,
+        onlyResult,
+        toggleOnlyResult,
         onSubmitMatrix,
         onFormatMatrix,
         handleSetInput,
+        handleSetSource,
       }}
     >
       {children}
-    </MatrixContext.Provider>
+    </ShortestPathContext.Provider>
   );
 }
