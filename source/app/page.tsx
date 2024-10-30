@@ -1,6 +1,7 @@
 "use client";
 
 import { AlgoRadio, TopicRadio } from "@/app/components/Radio";
+import { Toaster } from "@/components/ui/toaster";
 import TopicInput from "@/app/components/TopicInput";
 import GraphProvider from "@/app/contexts/GraphContext";
 import GraphReactFlow from "@/app/components/GraphReactFlow";
@@ -17,6 +18,7 @@ export default function Home() {
             <TopicInput />
           </div>
           <GraphReactFlow />
+          <Toaster />
         </div>
       </MatrixProvider>
     </GraphProvider>
