@@ -39,7 +39,7 @@ export class Matrix {
     return this.matrix.length;
   }
 
-  get_nodes(algo, source?: any) {
+  get_nodes(algo: any, source: any = -1) {
     return this.matrix.map((_, i) => {
       const res = {
         id: i.toString(),

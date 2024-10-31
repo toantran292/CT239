@@ -15,7 +15,8 @@ import { isDirectedMatrix, Matrix } from "@/lib/utils";
 import useGraph from "@/app/hooks/useGraph";
 import useMatrixInput from "@/app/hooks/useMatrixInput";
 import useShortestPath from "@/app/hooks/useShortestPath";
-import { GRAPH_TOPIC } from "@/app/constants";
+import { GRAPH_TOPIC, GRAPH_TOPIC_ALGOS } from "@/app/constants";
+import useResultOnly from "@/app/hooks/useResultOnly";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -54,14 +55,17 @@ const getLayoutedElements = (nodes: any, edges: any, direction = "TB") => {
   return { nodes: newNodes, edges };
 };
 
-const changeSourceElements = (nodes: any, source: number) => {
+const changeSourceElements = (algo: any, nodes: any, source: number) => {
   const newNodes = nodes.map((node: any) => {
     const res = {
       ...node,
       style: { ...node.style, backgroundColor: "white", color: "black" },
     };
 
-    if (node.id === source.toString()) {
+    if (
+      !GRAPH_TOPIC_ALGOS[GRAPH_TOPIC.MINIMUM_SPANNING_TREE].includes(algo) &&
+      node.id === source.toString()
+    ) {
       res.style = {
         ...res.style,
         backgroundColor: "red",
@@ -80,7 +84,8 @@ const edgeTypes = {
 
 const Flow = () => {
   const { matrix } = useMatrixInput();
-  const { source, onlyResult } = useShortestPath();
+  const { resultOnly } = useResultOnly();
+  const { source } = useShortestPath();
   const { selectedAlgo, selectedTopic } = useGraph();
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
@@ -88,7 +93,7 @@ const Flow = () => {
   useEffect(() => {
     const { nodes: initialNodes, edges: initialEdges } = new Matrix(
       matrix,
-    ).to_path(selectedAlgo, source, onlyResult);
+    ).to_path(selectedAlgo, source, resultOnly);
     const { nodes: layoutedNodes } = getLayoutedElements(
       initialNodes,
       initialEdges,
@@ -102,13 +107,16 @@ const Flow = () => {
     const { edges: initialEdges } = new Matrix(matrix).to_path(
       selectedAlgo,
       source,
-      onlyResult,
+      resultOnly,
     );
-    console.log({ initialEdges });
-    const { nodes: changedNodes } = changeSourceElements(nodes, source);
+    const { nodes: changedNodes } = changeSourceElements(
+      selectedAlgo,
+      nodes,
+      source,
+    );
     setEdges([...initialEdges]);
     setNodes([...changedNodes]);
-  }, [onlyResult, selectedAlgo, selectedTopic, setEdges, source]);
+  }, [resultOnly, selectedAlgo, selectedTopic, setEdges, source]);
 
   return (
     <ReactFlow

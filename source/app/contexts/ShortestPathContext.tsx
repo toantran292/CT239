@@ -4,9 +4,7 @@ import useMatrixInput from "@/app/hooks/useMatrixInput";
 export interface IShortestPath {
   source: number;
   errorSource: string | null;
-  onlyResult: boolean;
   handleSetSource: (value: number) => void;
-  toggleOnlyResult: () => void;
 }
 
 export const ShortestPathContext = createContext<IShortestPath>(
@@ -16,10 +14,8 @@ export const ShortestPathContext = createContext<IShortestPath>(
 export default function ShortestPathProvider({ children }: PropsWithChildren) {
   const { matrix } = useMatrixInput();
 
-  const [source, setSource] = useState<number>(0);
+  const [source, setSource] = useState<number>(-1);
   const [errorSource, setErrorSource] = useState<string | null>(null);
-
-  const [onlyResult, setOnlyResult] = useState(false);
 
   const handleSetSource = (v: number) => {
     if (v < 0 || v >= Math.max(matrix?.length || 0, matrix?.[0]?.length || 0)) {
@@ -32,10 +28,6 @@ export default function ShortestPathProvider({ children }: PropsWithChildren) {
     setSource(v);
   };
 
-  const toggleOnlyResult = () => {
-    setOnlyResult((prev) => !prev);
-  };
-
   useEffect(() => {
     setSource(0);
   }, [matrix]);
@@ -45,8 +37,6 @@ export default function ShortestPathProvider({ children }: PropsWithChildren) {
       value={{
         source,
         errorSource,
-        onlyResult,
-        toggleOnlyResult,
         handleSetSource,
       }}
     >

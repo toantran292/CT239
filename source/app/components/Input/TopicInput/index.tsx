@@ -1,7 +1,7 @@
 import useGraph from "@/app/hooks/useGraph";
 import { GRAPH_TOPIC } from "@/app/constants";
-import ShortestPathInput from "@/app/components/TopicInput/ShortestPathInput";
-import MSTInput from "@/app/components/TopicInput/MSTInput";
+import ShortestPathInput from "@/app/components/Input/TopicInput/ShortestPathInput";
+import MSTInput from "@/app/components/Input/TopicInput/MSTInput";
 
 function InvalidTopicInput() {
   return <div>Invalid topic!</div>;

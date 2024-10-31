@@ -1,7 +1,8 @@
-import MatrixInput from "@/app/components/MatrixInput";
+import MatrixInput from "../MatrixInput";
 import useMatrixInput from "@/app/hooks/useMatrixInput";
 import { useEffect } from "react";
 import { isDirectedMatrix } from "@/lib/utils";
+import ResultOnlyCheckbox from "@/app/components/Checkbox/ResultOnlyCheckbox";
 
 export default function MSTInput() {
   const { matrix, onValidateError } = useMatrixInput();
@@ -18,6 +19,10 @@ export default function MSTInput() {
       <MatrixInput
         containerClassName="grid w-full items-center gap-1.5 mb-3"
         label="Ma Trận (N, M <= 10)"
+      />
+      <ResultOnlyCheckbox
+        label="Chỉ hiện đường kết quả"
+        containerClassName="grid w-full items-center gap-1.5 mb-3"
       />
     </div>
   );
