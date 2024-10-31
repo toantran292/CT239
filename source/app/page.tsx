@@ -16,6 +16,8 @@ const Content = () => {
   switch (selectedTopic) {
     case GRAPH_TOPIC.SHORTEST_PATH:
       return <GraphReactFlow />;
+    case GRAPH_TOPIC.MINIMUM_SPANNING_TREE:
+      return <GraphReactFlow />;
     default:
       return <div>Nothing</div>;
   }

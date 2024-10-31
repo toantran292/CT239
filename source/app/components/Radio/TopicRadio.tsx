@@ -6,10 +6,6 @@ import { Label } from "@/components/ui/label";
 
 export default function TopicRadio() {
   const { selectedTopic, onChangeSelectedTopic } = useGraph();
-  const inputRefs = useRef<HTMLInputElement[]>([]);
-
-  console.log(inputRefs);
-
   return (
     <div className="grid w-full max-w-sm items-center gap-1.5 mb-3">
       <Label htmlFor="topic">Chủ đề:</Label>

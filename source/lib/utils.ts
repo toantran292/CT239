@@ -2,12 +2,16 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import {
   GRAPH_ALGO,
+  GRAPH_ALGO_NAME,
+  GRAPH_TOPIC,
+  GRAPH_TOPIC_ALGOS,
   MINIMUM_SPANNING_TREE_ALGO,
   SHORTEST_PATH_ALGO,
 } from "@/app/constants";
 import dijkstra from "@/app/algorthms/shortest_paths/dijkstra";
 import { MarkerType } from "@xyflow/react";
 import floyd from "@/app/algorthms/shortest_paths/floyd";
+import prim from "@/app/algorthms/minimun_spanning_tree/prim";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -33,6 +37,40 @@ export class Matrix {
 
   n() {
     return this.matrix.length;
+  }
+
+  get_nodes(algo, source?: any) {
+    return this.matrix.map((_, i) => {
+      const res = {
+        id: i.toString(),
+        data: { label: `${i}` },
+        position: { x: 0, y: 0 },
+        style: {
+          borderRadius: "100%",
+          backgroundColor: "#fff",
+          width: 30,
+          height: 30,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      };
+
+      if (
+        !GRAPH_TOPIC_ALGOS[GRAPH_TOPIC.MINIMUM_SPANNING_TREE].includes(algo) &&
+        i === source
+      ) {
+        res.style = {
+          ...res.style,
+          backgroundColor: "red",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          color: "white",
+        };
+      }
+
+      return res;
+    });
   }
 
   get(i: number, j: number) {
@@ -100,6 +138,46 @@ export class Matrix {
     return { nodes, edges };
   }
 
+  to_path_prim(nodes: any, onlyResult: boolean = false) {
+    const { parent, cost } = prim(this.matrix);
+
+    const temp = parent.reduce((acc, source, target) => {
+      if (source !== -1) {
+        acc.push(`e${source}${target}`);
+        acc.push(`e${target}${source}`);
+      }
+      return acc;
+    }, []) as string[];
+
+    const edges = parent.reduce((acc, source, target) => {
+      if (source !== -1) {
+        acc.push({
+          id: `e${source}${target}`,
+          source: source.toString(),
+          target: target.toString(),
+          data: {
+            label: this.get(source, target).toString(),
+          },
+          type: "floating",
+          style: {
+            strokeWidth: 2,
+            stroke: "green",
+          },
+        });
+      }
+      return acc;
+    }, []);
+
+    if (!onlyResult)
+      edges.push(
+        ...this.to_path_default(nodes, false).edges.filter(
+          (edge) => !temp.includes(edge.id),
+        ),
+      );
+
+    return { nodes, edges };
+  }
+
   to_path_default(nodes: any, isDirected: boolean) {
     const edges = this.matrix.flatMap((line, i) =>
       line
@@ -142,44 +220,13 @@ export class Matrix {
     return { nodes, edges };
   }
 
-  to_path_prim() {
-    return { nodes: [], edges: [] };
-  }
-
   to_path(
     algo: GRAPH_ALGO | null,
     source?: number,
     onlyResult: boolean = false,
   ) {
     const isDirected = isDirectedMatrix(this.matrix);
-    const nodes = this.matrix.map((_, i) => {
-      const res = {
-        id: i.toString(),
-        data: { label: `${i}` },
-        position: { x: 0, y: 0 },
-        style: {
-          borderRadius: "100%",
-          backgroundColor: "#fff",
-          width: 30,
-          height: 30,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-      };
-
-      if (i === source) {
-        res.style = {
-          ...res.style,
-          backgroundColor: "red",
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          color: "white",
-        };
-      }
-
-      return res;
-    });
+    const nodes = this.get_nodes(algo, source);
 
     switch (algo) {
       case SHORTEST_PATH_ALGO.DIJKSTRA:
@@ -187,7 +234,7 @@ export class Matrix {
       case SHORTEST_PATH_ALGO.FLOYD:
         return this.to_path_floyd(nodes, isDirected, source, onlyResult);
       case MINIMUM_SPANNING_TREE_ALGO.PRIM:
-        return this.to_path_prim();
+        return this.to_path_prim(nodes, onlyResult);
       default:
         return this.to_path_default(nodes, isDirected);
     }

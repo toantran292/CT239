@@ -11,10 +11,11 @@ import { useEffect } from "react";
 import FloatingEdge from "@/app/components/GraphReactFlow/edges/FloatingEdge";
 import FloatingConnectionLine from "@/app/components/GraphReactFlow/edges/FloatingConnectionLine";
 
-import { Matrix } from "@/lib/utils";
+import { isDirectedMatrix, Matrix } from "@/lib/utils";
 import useGraph from "@/app/hooks/useGraph";
 import useMatrixInput from "@/app/hooks/useMatrixInput";
 import useShortestPath from "@/app/hooks/useShortestPath";
+import { GRAPH_TOPIC } from "@/app/constants";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -80,7 +81,7 @@ const edgeTypes = {
 const Flow = () => {
   const { matrix } = useMatrixInput();
   const { source, onlyResult } = useShortestPath();
-  const { selectedAlgo } = useGraph();
+  const { selectedAlgo, selectedTopic } = useGraph();
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
@@ -95,7 +96,7 @@ const Flow = () => {
     );
     setNodes([...layoutedNodes]);
     // setEdges([...initialEdges]);
-  }, [matrix]);
+  }, [matrix, selectedAlgo, selectedTopic]);
 
   useEffect(() => {
     const { edges: initialEdges } = new Matrix(matrix).to_path(
@@ -103,10 +104,11 @@ const Flow = () => {
       source,
       onlyResult,
     );
+    console.log({ initialEdges });
     const { nodes: changedNodes } = changeSourceElements(nodes, source);
     setEdges([...initialEdges]);
     setNodes([...changedNodes]);
-  }, [onlyResult, selectedAlgo, setEdges, source]);
+  }, [onlyResult, selectedAlgo, selectedTopic, setEdges, source]);
 
   return (
     <ReactFlow
@@ -130,8 +132,15 @@ const Flow = () => {
 
 export default function GraphReactFlow() {
   const { matrix } = useMatrixInput();
+  const { selectedTopic } = useGraph();
 
   if (!matrix) return null;
+
+  if (
+    selectedTopic === GRAPH_TOPIC.MINIMUM_SPANNING_TREE &&
+    isDirectedMatrix(matrix)
+  )
+    return null;
 
   return <Flow />;
 }
