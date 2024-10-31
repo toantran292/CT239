@@ -1,8 +1,13 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { GRAPH_ALGO, SHORTEST_PATH_ALGO } from "@/app/constants";
+import {
+  GRAPH_ALGO,
+  MINIMUM_SPANNING_TREE_ALGO,
+  SHORTEST_PATH_ALGO,
+} from "@/app/constants";
 import dijkstra from "@/app/algorthms/shortest_paths/dijkstra";
 import { MarkerType } from "@xyflow/react";
+import floyd from "@/app/algorthms/shortest_paths/floyd";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -26,8 +31,21 @@ export class Matrix {
     this.matrix = matrix;
   }
 
+  n() {
+    return this.matrix.length;
+  }
+
   get(i: number, j: number) {
     return this.matrix[i][j];
+  }
+
+  to_path_floyd(
+    nodes: any,
+    isDirected: boolean,
+    source,
+    onlyResult: boolean = false,
+  ) {
+    return { nodes, edges: [] };
   }
 
   to_path_dijkstra(
@@ -77,6 +95,8 @@ export class Matrix {
           (edge) => !temp.includes(edge.id),
         ),
       );
+
+    console.log({ nodes, edges });
     return { nodes, edges };
   }
 
@@ -122,6 +142,10 @@ export class Matrix {
     return { nodes, edges };
   }
 
+  to_path_prim() {
+    return { nodes: [], edges: [] };
+  }
+
   to_path(
     algo: GRAPH_ALGO | null,
     source?: number,
@@ -156,9 +180,14 @@ export class Matrix {
 
       return res;
     });
+
     switch (algo) {
       case SHORTEST_PATH_ALGO.DIJKSTRA:
         return this.to_path_dijkstra(nodes, isDirected, source, onlyResult);
+      case SHORTEST_PATH_ALGO.FLOYD:
+        return this.to_path_floyd(nodes, isDirected, source, onlyResult);
+      case MINIMUM_SPANNING_TREE_ALGO.PRIM:
+        return this.to_path_prim();
       default:
         return this.to_path_default(nodes, isDirected);
     }

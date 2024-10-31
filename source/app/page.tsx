@@ -8,6 +8,7 @@ import GraphReactFlow from "@/app/components/GraphReactFlow";
 import ShortestPathProvider from "@/app/contexts/ShortestPathContext";
 import useGraph from "@/app/hooks/useGraph";
 import { GRAPH_TOPIC } from "@/app/constants";
+import MatrixInputProvider from "@/app/providers/MatrixInput.provider";
 
 const Content = () => {
   const { selectedTopic, selectedAlgo } = useGraph();
@@ -24,18 +25,20 @@ export default function Home() {
   return (
     <>
       <GraphProvider>
-        <ShortestPathProvider>
-          <div className="flex flex-row w-full h-full">
-            <div className="w-1/4 p-3">
-              <TopicRadio />
-              <AlgoRadio />
-              <TopicInput />
+        <MatrixInputProvider>
+          <ShortestPathProvider>
+            <div className="flex flex-row w-full h-full">
+              <div className="w-1/4 p-3">
+                <TopicRadio />
+                <AlgoRadio />
+                <TopicInput />
+              </div>
+              <div className="flex-col flex-1 h-screen border-2 p-3">
+                <Content />
+              </div>
             </div>
-            <div className="flex-col flex-1 h-screen border-2 p-3">
-              <Content />
-            </div>
-          </div>
-        </ShortestPathProvider>
+          </ShortestPathProvider>
+        </MatrixInputProvider>
       </GraphProvider>
       <Toaster />
     </>

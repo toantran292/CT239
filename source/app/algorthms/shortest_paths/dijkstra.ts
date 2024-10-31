@@ -1,12 +1,3 @@
-function printPath(trace: number[], node: number) {
-  const path = [];
-  while (node !== -1) {
-    path.push(node);
-    node = trace[node];
-  }
-  return path.reverse();
-}
-
 export default function dijkstra(graph: Array<Array<number>>, source: number) {
   const n = graph.length;
   const dist = Array(n).fill(Infinity);
@@ -35,27 +26,10 @@ export default function dijkstra(graph: Array<Array<number>>, source: number) {
 
   return { dist, trace };
 }
-
-// function testDijkstra() {
-//   const graph = [
+// Example usage:
 //     [0, 1, 4, 0, 0, 0],
 //     [1, 0, 4, 2, 7, 0],
 //     [4, 4, 0, 3, 5, 0],
 //     [0, 2, 3, 0, 4, 6],
 //     [0, 7, 5, 4, 0, 7],
 //     [0, 0, 0, 6, 7, 0],
-//   ];
-//   const source = 0;
-//   const { dist, trace } = dijkstra(graph, source);
-//
-//   console.log(`Source: ${source}`);
-//   for (let i = 0; i < dist.length; i++) {
-//     if (i !== source) {
-//       console.log(
-//         `To node ${i}: Cost = ${dist[i]}, Path = ${printPath(trace, i).join(" -> ")}`,
-//       );
-//     }
-//   }
-// }
-//
-// testDijkstra();

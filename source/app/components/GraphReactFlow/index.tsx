@@ -1,19 +1,20 @@
 import {
-  addEdge,
   Background,
   BackgroundVariant,
-  ConnectionLineType,
   ReactFlow,
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
 import dagre from "@dagrejs/dagre";
-import { useCallback, useEffect } from "react";
-import useShortestPath from "@/app/hooks/useShortestPath";
-import { Matrix } from "@/lib/utils";
-import useGraph from "@/app/hooks/useGraph";
+import { useEffect } from "react";
+
 import FloatingEdge from "@/app/components/GraphReactFlow/edges/FloatingEdge";
 import FloatingConnectionLine from "@/app/components/GraphReactFlow/edges/FloatingConnectionLine";
+
+import { Matrix } from "@/lib/utils";
+import useGraph from "@/app/hooks/useGraph";
+import useMatrixInput from "@/app/hooks/useMatrixInput";
+import useShortestPath from "@/app/hooks/useShortestPath";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -77,14 +78,15 @@ const edgeTypes = {
 };
 
 const Flow = () => {
-  const { matrixValue, source, onlyResult } = useShortestPath();
+  const { matrix } = useMatrixInput();
+  const { source, onlyResult } = useShortestPath();
   const { selectedAlgo } = useGraph();
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
   useEffect(() => {
     const { nodes: initialNodes, edges: initialEdges } = new Matrix(
-      matrixValue,
+      matrix,
     ).to_path(selectedAlgo, source, onlyResult);
     const { nodes: layoutedNodes } = getLayoutedElements(
       initialNodes,
@@ -92,10 +94,11 @@ const Flow = () => {
       "LR",
     );
     setNodes([...layoutedNodes]);
-  }, [matrixValue, selectedAlgo, setEdges, setNodes]);
+    // setEdges([...initialEdges]);
+  }, [matrix]);
 
   useEffect(() => {
-    const { edges: initialEdges } = new Matrix(matrixValue).to_path(
+    const { edges: initialEdges } = new Matrix(matrix).to_path(
       selectedAlgo,
       source,
       onlyResult,
@@ -103,7 +106,7 @@ const Flow = () => {
     const { nodes: changedNodes } = changeSourceElements(nodes, source);
     setEdges([...initialEdges]);
     setNodes([...changedNodes]);
-  }, [matrixValue, onlyResult, selectedAlgo, setEdges, source]);
+  }, [onlyResult, selectedAlgo, setEdges, source]);
 
   return (
     <ReactFlow
@@ -126,9 +129,9 @@ const Flow = () => {
 };
 
 export default function GraphReactFlow() {
-  const { matrixValue } = useShortestPath();
+  const { matrix } = useMatrixInput();
 
-  if (!matrixValue) return null;
+  if (!matrix) return null;
 
   return <Flow />;
 }
