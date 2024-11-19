@@ -95,20 +95,9 @@ const FloatingEdge: FC<EdgeProps<FloatingEdge>> = ({
 
   if (isSelfLoop) {
     // Handle ring path (self-loop)
-    console.log("IS SELF LOOP");
     edgePath = getRingPath(sx, sy, nodeSize);
     labelX = sx + nodeSize;
     labelY = sy - nodeSize - 10; // Adjust label position above the loop
-    console.log({
-      edgePath,
-      labelX,
-      labelY,
-      sx,
-      sy,
-      nodeSize,
-      sourceNode,
-      targetNode,
-    });
   } else if (isBiDirectionEdge) {
     // Handle bidirectional edge
     edgePath = getSpecialPath(

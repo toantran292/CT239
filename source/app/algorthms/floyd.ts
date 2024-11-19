@@ -1,4 +1,4 @@
-export default function floyd(graph: number[][]) {
+export function floyd(graph: number[][]) {
   const n = graph.length;
   const dist = Array.from(Array(n), () => new Array(n).fill(0));
   const trace = Array.from(Array(n), () => new Array(n).fill(-1));

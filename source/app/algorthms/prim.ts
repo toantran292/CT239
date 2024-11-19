@@ -11,7 +11,7 @@ function findBestU(cost: number[], visited: boolean[], n: number) {
   return uBest;
 }
 
-export default function prim(graph: Array<Array<number>>) {
+export function prim(graph: Array<Array<number>>) {
   const n = graph.length;
   const cost = Array(n).fill(Infinity);
   const visited = Array(n).fill(false);

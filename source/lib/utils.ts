@@ -53,7 +53,6 @@ export const checkAlgorithms = (matrix: Matrix): Record<string, string[]> => {
     [TOPICS.SHORTEST_PATH]: [],
     [TOPICS.TSP]: [],
     [TOPICS.MINIMUM_SPANNING_TREE]: [],
-    [TOPICS.GRAPH_COLORING]: [],
   };
 
   // Shortest Path
@@ -77,9 +76,6 @@ export const checkAlgorithms = (matrix: Matrix): Record<string, string[]> => {
       applicableAlgorithms[TOPICS.MINIMUM_SPANNING_TREE].push(ALGORITHMS.PRIM);
     }
   }
-
-  // Graph Coloring
-  applicableAlgorithms[TOPICS.GRAPH_COLORING].push(ALGORITHMS.BACKTRACKING);
 
   return applicableAlgorithms;
 };
