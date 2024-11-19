@@ -50,6 +50,7 @@ export function ComboboxDemo({
   onChange,
   label,
   emptyLabel,
+  meta,
 }: {
   id: string;
   options: any;
@@ -58,6 +59,7 @@ export function ComboboxDemo({
   onChange: any;
   label: any;
   emptyLabel: any;
+  meta?: any;
 }) {
   const [open, setOpen] = React.useState(false);
   return (
@@ -84,6 +86,7 @@ export function ComboboxDemo({
                 <CommandItem
                   key={option}
                   value={option}
+                  disabled={meta?.[option]?.length === 0}
                   onSelect={(currentValue) => {
                     onChange(currentValue === value ? "" : currentValue);
                     setOpen(false);
