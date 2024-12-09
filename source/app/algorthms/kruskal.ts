@@ -30,18 +30,15 @@ export function kruskal(graph: Array<Array<number>>) {
 
   const mstEdges = [];
 
+  let cost = 0;
+
   for (const { u, v, weight } of edges) {
     if (findRoot(parent, u) !== findRoot(parent, v)) {
       union(parent, u, v);
       mstEdges.push({ u, v, weight });
+      cost += weight;
     }
   }
 
-  const cost = Array(n).fill(Infinity);
-  for (const { v, weight } of mstEdges) {
-    cost[v] = weight;
-  }
-
-  console.log({ parent, edges, mstEdges });
   return { cost, mstEdges };
 }
