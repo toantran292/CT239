@@ -1,3 +1,16 @@
+function findBestU(cost: number[], visited: boolean[], n: number) {
+  let uBest = 0;
+  let _min = Infinity;
+  for (let u = 0; u < n; u++) {
+    if (!visited[u] && cost[u] < _min) {
+      uBest = u;
+      _min = cost[u];
+    }
+  }
+
+  return uBest;
+}
+
 export function dijkstra(graph: Array<Array<number>>, source: number) {
   const n = graph.length;
   const dist = Array(n).fill(Infinity);
@@ -7,13 +20,7 @@ export function dijkstra(graph: Array<Array<number>>, source: number) {
   dist[source] = 0;
 
   for (let i = 0; i < n; i++) {
-    let u = -1;
-    for (let j = 0; j < n; j++) {
-      if (!visited[j] && (u === -1 || dist[j] < dist[u])) {
-        u = j;
-      }
-    }
-
+    const u = findBestU(dist, visited, n);
     visited[u] = true;
 
     for (let v = 0; v < n; v++) {

@@ -13,25 +13,25 @@ function findBestU(cost: number[], visited: boolean[], n: number) {
 
 export function prim(graph: Array<Array<number>>) {
   const n = graph.length;
-  const cost = Array(n).fill(Infinity);
+  const dist = Array(n).fill(Infinity);
   const visited = Array(n).fill(false);
+  const trace = Array(n).fill(-1);
 
-  const parent = Array(n).fill(-1);
+  dist[0] = 0;
 
-  cost[0] = 0;
   for (let i = 0; i < n; i++) {
-    const u = findBestU(cost, visited, n);
+    const u = findBestU(dist, visited, n);
     visited[u] = true;
 
     for (let v = 0; v < n; v++) {
-      if (!visited[v] && graph[u][v] !== 0 && graph[u][v] < cost[v]) {
-        cost[v] = graph[u][v];
-        parent[v] = u;
+      if (!visited[v] && graph[u][v] !== 0 && graph[u][v] < dist[v]) {
+        dist[v] = graph[u][v];
+        trace[v] = u;
       }
     }
   }
 
-  return { cost, parent };
+  return { dist, trace };
 }
 
 // Example data

@@ -103,9 +103,9 @@ export const getResultGraphByKruskal = (mat: number[][]) => {
   }, []);
 };
 export const getResultGraphByPrim = (mat: number[][]) => {
-  const { parent } = prim(mat);
+  const { trace } = prim(mat);
 
-  return parent.reduce((acc, source, target) => {
+  return trace.reduce((acc, source, target) => {
     if (source !== -1) {
       acc.push(
         buildEdge(source, target, String(mat[source][target]), false, "green"),
